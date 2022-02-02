@@ -5,6 +5,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
+  setUnreadMessages,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -72,7 +73,20 @@ export const logout = (id) => async (dispatch) => {
 export const fetchConversations = () => async (dispatch) => {
   try {
     const { data } = await axios.get("/api/conversations");
-    dispatch(gotConversations(data));
+
+    const conversations = []
+    data.forEach((convo) => {
+      const sortedData = {
+        ...convo,
+        messages: convo.messages.sort((a, b) => {
+          return new Date(a.createdAt) - new Date(b.createdAt)
+        }),
+        unreadMessages: convo.messages.filter((mes) => !mes.read && (mes.senderId === convo.otherUser.id))
+      }
+      conversations.push(sortedData)
+      return null;
+    })
+   dispatch(gotConversations(conversations));
   } catch (error) {
     console.error(error);
   }
@@ -93,14 +107,13 @@ const sendMessage = (data, body) => {
 
 // message format to send: {recipientId, text, conversationId}
 // conversationId will be set to null if its a brand new conversation
-export const postMessage = (body) => (dispatch) => {
+export const postMessage = (body) => async(dispatch) => {
   try {
-    const data = saveMessage(body);
-
+    const data = await saveMessage(body)
     if (!body.conversationId) {
       dispatch(addConversation(body.recipientId, data.message));
     } else {
-      dispatch(setNewMessage(data.message));
+      dispatch(setNewMessage(data.message, data.sender));
     }
 
     sendMessage(data, body);
@@ -117,3 +130,14 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
     console.error(error);
   }
 };
+
+export const readMessage = (body) => async (dispatch) => {
+  // reads messages given an array of message id
+  try {
+    const { data } = await axios.put("/api/messages/read", { id: body.id })
+    dispatch(setUnreadMessages(body.conversationId))
+    return data;
+  } catch (error) {
+    console.error('error in readMessage ', error)
+  }
+}

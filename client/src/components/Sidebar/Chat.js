@@ -1,9 +1,10 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { Box } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
 import { connect } from "react-redux";
+import UnreadMessages from "./unreadMessages";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -13,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 10,
     display: "flex",
     alignItems: "center",
+    justifyContent: 'space-between',
     "&:hover": {
       cursor: "grab"
     }
@@ -23,6 +25,11 @@ const Chat = (props) => {
   const classes = useStyles();
   const { conversation } = props;
   const { otherUser } = conversation;
+  const unreadMessages = conversation.unreadMessages?.length ?? 0;
+
+  useEffect(()=>{
+    console.log('conversation', conversation);
+  }, [conversation])
 
   const handleClick = async (conversation) => {
     await props.setActiveChat(conversation.otherUser.username);
@@ -36,7 +43,8 @@ const Chat = (props) => {
         online={otherUser.online}
         sidebar={true}
       />
-      <ChatContent conversation={conversation} />
+      <ChatContent conversation={conversation} count={unreadMessages} />
+      {unreadMessages > 0 && <UnreadMessages count={unreadMessages} />}
     </Box>
   );
 };
