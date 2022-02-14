@@ -5,8 +5,8 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() => ({
   profilePic: {
-    height: 44,
-    width: 44
+    height: 20,
+    width: 20
   },
   badge: {
     height: 13,
