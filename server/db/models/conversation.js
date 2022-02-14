@@ -2,7 +2,16 @@ const { Op } = require("sequelize");
 const db = require("../db");
 const Message = require("./message");
 
-const Conversation = db.define("conversation", {});
+const Conversation = db.define("conversation", {
+  userIds: {
+    type: Object,
+    allowNull: false,
+  },
+  convoName: {
+    type: String,
+    allowNull: true,
+  }
+});
 
 // find conversation given two user Ids
 
@@ -21,5 +30,7 @@ Conversation.findConversation = async function (user1Id, user2Id) {
   // return conversation or null if it doesn't exist
   return conversation;
 };
+
+
 
 module.exports = Conversation;
