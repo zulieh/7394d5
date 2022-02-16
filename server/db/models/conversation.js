@@ -22,4 +22,15 @@ Conversation.findConversation = async function (user1Id, user2Id) {
   return conversation;
 };
 
+Conversation.findConversationById = async function (id) {
+  const conversation = await Conversation.findOne({
+    where: {
+      id: id,
+    }
+  });
+
+  // return conversation or null if it doesn't exist
+  return conversation;
+};
+
 module.exports = Conversation;

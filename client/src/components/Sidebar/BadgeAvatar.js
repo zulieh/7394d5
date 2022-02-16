@@ -5,8 +5,8 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() => ({
   profilePic: {
-    height: 44,
-    width: 44
+    height: 20,
+    width: 20
   },
   badge: {
     height: 13,
@@ -25,13 +25,14 @@ const useStyles = makeStyles(() => ({
 
 const UserAvatar = (props) => {
   const classes = useStyles();
-  const { sidebar, username, photoUrl, online } = props;
+  const { sidebar, username, photoUrl, online, invisible } = props;
 
   return (
     <Box className={sidebar ? classes.sidebar : ""}>
       <Badge
         classes={{ badge: `${classes.badge} ${online && classes.online}` }}
-        variant="dot"
+        variant="dot" 
+        invisible = {invisible}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
         overlap="circle">
         <Avatar alt={username} src={photoUrl} className={classes.profilePic}></Avatar>
